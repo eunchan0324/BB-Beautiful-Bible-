@@ -1,0 +1,324 @@
+# BB (Beautiful Bible) 디자인 스펙
+
+## 📋 디자인 시스템
+
+### 🎨 컬러 팔레트
+```css
+/* Primary Colors */
+--primary-50: #fff7ed;
+--primary-100: #ffedd5;
+--primary-200: #fed7aa;
+--primary-300: #fdba74;
+--primary-400: #fb923c;
+--primary-500: #f97316;  /* 메인 오렌지 */
+--primary-600: #ea580c;
+--primary-700: #c2410c;
+--primary-800: #9a3412;
+--primary-900: #7c2d12;
+
+/* Gray Scale */
+--gray-50: #f9fafb;
+--gray-100: #f3f4f6;
+--gray-200: #e5e7eb;
+--gray-300: #d1d5db;
+--gray-400: #9ca3af;
+--gray-500: #6b7280;
+--gray-600: #4b5563;
+--gray-700: #374151;
+--gray-800: #1f2937;
+--gray-900: #111827;
+
+/* Semantic Colors */
+--success: #10b981;
+--warning: #f59e0b;
+--error: #ef4444;
+--info: #3b82f6;
+
+/* Background */
+--bg-primary: #ffffff;
+--bg-secondary: #f9fafb;
+--bg-tertiary: #f3f4f6;
+```
+
+### 📝 타이포그래피
+```css
+/* Font Family */
+--font-primary: "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif;
+--font-mono: "SF Mono", Consolas, monospace;
+
+/* Font Sizes */
+--text-xs: 12px;    /* 0.75rem */
+--text-sm: 14px;    /* 0.875rem */
+--text-base: 16px;  /* 1rem */
+--text-lg: 18px;    /* 1.125rem */
+--text-xl: 20px;    /* 1.25rem */
+--text-2xl: 24px;   /* 1.5rem */
+--text-3xl: 30px;   /* 1.875rem */
+--text-4xl: 36px;   /* 2.25rem */
+
+/* Font Weights */
+--font-light: 300;
+--font-normal: 400;
+--font-medium: 500;
+--font-semibold: 600;
+--font-bold: 700;
+
+/* Line Heights */
+--leading-tight: 1.25;
+--leading-normal: 1.5;
+--leading-relaxed: 1.625;
+```
+
+### 📏 간격 시스템 (8px Grid)
+```css
+/* Spacing Scale */
+--space-1: 4px;     /* 0.25rem */
+--space-2: 8px;     /* 0.5rem */
+--space-3: 12px;    /* 0.75rem */
+--space-4: 16px;    /* 1rem */
+--space-5: 20px;    /* 1.25rem */
+--space-6: 24px;    /* 1.5rem */
+--space-8: 32px;    /* 2rem */
+--space-10: 40px;   /* 2.5rem */
+--space-12: 48px;   /* 3rem */
+--space-16: 64px;   /* 4rem */
+--space-20: 80px;   /* 5rem */
+
+/* Specific Usage */
+--padding-sm: var(--space-3);
+--padding-md: var(--space-4);
+--padding-lg: var(--space-6);
+--margin-sm: var(--space-2);
+--margin-md: var(--space-4);
+--margin-lg: var(--space-8);
+```
+
+### 🔵 Border Radius
+```css
+--radius-none: 0;
+--radius-sm: 4px;
+--radius-md: 8px;
+--radius-lg: 12px;
+--radius-xl: 16px;
+--radius-full: 9999px;
+```
+
+### 🌫️ 그림자
+```css
+--shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+--shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+--shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+--shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+```
+
+---
+
+## 📱 화면별 디자인 스펙
+
+### 🏠 메인 화면 (Home)
+```
+현재 상태: 디자인 스펙 확정
+업데이트 필요 사항:
+- [x] 배경색 적용
+- [x] 텍스트 색상 및 스타일링 
+- [x] 폰트 설정
+- [x] 바텀 네비게이션 색상
+- [ ] 로고 디자인 최신화 (제작중)
+```
+
+**디자이너 제공 스펙:**
+- 배경색: #F0EEE7
+- 로고: 현재 BB 로고 임시 사용 (제작중)
+- 메인 텍스트: "하루를 기록하는 가장 간단한 간단한 방법 간단한"
+- 텍스트 색상: #414141
+- 텍스트 폰트: Pretendard, semiBold, 18px
+- 바텀 아이콘 활성화: #8D8881
+- 바텀 아이콘 비활성화: #D2CFC8  
+- 바텀 텍스트 색상: #343434
+
+### 📖 성경 목록 화면 (Bible List)
+```
+현재 상태: 브레드크럼 디자인 적용 중
+업데이트 필요 사항:
+- [x] 브레드크럼 스타일링
+- [ ] 드롭다운 디자인 개선
+- [ ] 책 버튼 스타일링
+- [ ] 간격 조정
+```
+
+**디자이너 제공 스펙:**
+- 브레드크럼 폰트: Pretendard, semiBold, 18px
+- 브레드크럼 활성화 글씨: #55524F
+- 브레드크럼 비활성화 글씨: #D2CFC8
+- 브레드크럼 활성 하단바: #8D8881
+- 브레드크럼 비활성 하단바: #D2CFC8
+
+**드롭다운 스펙:**
+- 크기: 73×36px (반응형)
+- 배경: #FFFFFF (80% 투명도, blur 효과)
+- 텍스트: Pretendard, Bold, 14px
+- 구약 텍스트: #3F74AB
+- 신약 텍스트: #8C4643
+- 아이콘: 14×14px, #414141
+- 활성화 시 텍스트: #414141
+- 활성화 시 배경: #FFFFFF (80%)
+- 구분선: #D9D9D9 (80%)
+
+**책 버튼 스펙:**
+- 크기: 153×56px (반응형)
+- 배경색: #FFFFFF
+- 내부 동그라미: x10, y중앙
+  - 구약: #CCE5FF (연한 파란색)
+  - 신약: #FFD8D6 (연한 핑크색)
+- 동그라미 텍스트: Pretendard, Regular, 14px, #414141, 중앙
+- 책 이름: x58, Pretendard, semiBold, 13px (사용자 수정)
+
+### 📑 장 선택 화면 (Chapter Selection)
+```
+현재 상태: 구현됨
+업데이트 필요 사항:
+- [ ] 그리드 레이아웃 최적화
+- [ ] 버튼 디자인 개선
+- [ ] 브레드크럼 스타일링
+```
+
+**디자이너 제공 스펙:**
+- 그리드 간격: [px 값]
+- 버튼 크기: [width x height]
+- 활성/비활성 상태 색상: [색상 코드들]
+- 브레드크럼 폰트 크기: [px 값]
+
+### 📝 절 선택 화면 (Verse Selection)
+```
+현재 상태: 구현됨
+업데이트 필요 사항:
+- [ ] 그리드 레이아웃 최적화
+- [ ] 버튼 디자인 통일
+```
+
+### 📖 구절 읽기 화면 (Verse Reading)
+```
+현재 상태: 구현됨
+업데이트 필요 사항:
+- [ ] Sticky Header 디자인
+- [ ] 폰트 크기 토글 스타일
+- [ ] 구절 텍스트 스타일링
+- [ ] 하이라이팅 색상 조정
+```
+
+**디자이너 제공 스펙:**
+- Sticky Header 배경: [색상 코드]
+- 폰트 크기 버튼: [스타일 설명]
+- 구절 번호 색상: [색상 코드]
+- 구절 텍스트 색상: [색상 코드]
+- 하이라이팅 색상: [색상 코드들]
+
+---
+
+## 🔧 컴포넌트 상태 스펙
+
+### 버튼 상태
+```css
+/* Primary Button */
+.btn-primary {
+  background: [기본 색상];
+  color: [텍스트 색상];
+}
+
+.btn-primary:hover {
+  background: [호버 색상];
+}
+
+.btn-primary:active {
+  background: [클릭 색상];
+}
+
+.btn-primary:disabled {
+  background: [비활성 색상];
+  color: [비활성 텍스트 색상];
+}
+```
+
+### 입력 필드 상태
+```css
+/* Input Field */
+.input {
+  border: [기본 테두리];
+  background: [배경색];
+}
+
+.input:focus {
+  border: [포커스 테두리];
+  box-shadow: [포커스 그림자];
+}
+
+.input:error {
+  border: [에러 테두리];
+}
+```
+
+---
+
+## 📐 반응형 브레이크포인트
+```css
+/* Mobile First */
+--mobile: 375px;
+--tablet: 768px;
+--desktop: 1024px;
+--large: 1280px;
+
+/* Usage */
+@media (min-width: 768px) {
+  /* Tablet+ styles */
+}
+
+@media (min-width: 1024px) {
+  /* Desktop+ styles */
+}
+```
+
+---
+
+## 🎨 다크모드 (필요시)
+```css
+/* Dark Mode Colors */
+@media (prefers-color-scheme: dark) {
+  --bg-primary: #111827;
+  --bg-secondary: #1f2937;
+  --text-primary: #f9fafb;
+  --text-secondary: #d1d5db;
+}
+```
+
+---
+
+## 📋 구현 체크리스트
+
+### Phase 1: 기본 스타일링
+- [ ] CSS 변수 설정
+- [ ] 전역 스타일 적용
+- [ ] 컴포넌트별 기본 스타일
+
+### Phase 2: 상세 스타일링
+- [ ] 메인 화면 디자인 적용
+- [ ] 성경 목록 화면 스타일링
+- [ ] 장/절 선택 화면 개선
+
+### Phase 3: 인터랙션
+- [ ] 호버/클릭 상태 적용
+- [ ] 애니메이션 추가
+- [ ] 반응형 최적화
+
+### Phase 4: 마무리
+- [ ] 다크모드 (선택사항)
+- [ ] 접근성 개선
+- [ ] 성능 최적화
+
+---
+
+## 📝 업데이트 로그
+```
+2024-XX-XX: 초기 스펙 문서 생성
+2024-XX-XX: [디자이너명] 디자인 반영
+2024-XX-XX: [수정 내용]
+```
