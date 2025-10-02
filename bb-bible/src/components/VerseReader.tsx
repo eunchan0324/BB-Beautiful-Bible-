@@ -92,7 +92,8 @@ export default function VerseReader({ verses, fontSize, startVerse }: VerseReade
                     fontSize: fontSize === 'large' ? '16px' : '14px',
                     color: '#3C3C3C',
                     marginRight: '10px',
-                    flexShrink: 0
+                    flexShrink: 0,
+                    marginTop: fontSize === 'large' ? '3px' : '2px'
                   }}
                 >
                   {verse.verse}
