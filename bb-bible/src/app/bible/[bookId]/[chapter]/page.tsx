@@ -18,12 +18,28 @@ export default function ChapterReadPage() {
   const chapterNumber = parseInt(params.chapter as string);
   const startVerse = searchParams.get('startVerse') ? parseInt(searchParams.get('startVerse')!) : 1;
   
-  const [fontSize, setFontSize] = useState<FontSize['size']>('large');
   const [verses, setVerses] = useState<BibleVerse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const { loadBibleData, parsedData, isLoading: storeLoading, error: storeError } = useBibleStore();
+
+  // localStorage에서 폰트 크기 로드 (기본값: 'small')
+  const [fontSize, setFontSize] = useState<FontSize['size']>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('bb-bible-font-size');
+      return (saved === 'small' || saved === 'large') ? saved : 'small';
+    }
+    return 'small';
+  });
+
+  // 폰트 크기 변경 시 localStorage에 저장
+  const handleFontSizeChange = (size: FontSize['size']) => {
+    setFontSize(size);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('bb-bible-font-size', size);
+    }
+  };
 
   // 책 정보 찾기
   const decodedBookId = decodeURIComponent(bookId);
@@ -147,25 +163,30 @@ export default function ChapterReadPage() {
   };
 
   return (
-    <div className="min-h-screen">
+    <div 
+      className="min-h-screen"
+      style={{ backgroundColor: '#FFFFFF' }}
+    >
       {/* Sticky Header */}
       <StickyHeader
         bookName={book.name}
         chapterNumber={chapterNumber}
         fontSize={fontSize}
         onBookChapterSelect={handleBookChapterSelect}
-        onFontSizeChange={setFontSize}
+        onFontSizeChange={handleFontSizeChange}
       />
 
       {/* 상단 여백 (Sticky Header 공간 확보) */}
-      <div className="pt-[130px] px-[30px]">
+      <div className="pt-[80px]">
         {/* 구절 읽기 */}
-        <VerseReader
-          verses={verses}
-          fontSize={fontSize}
-          onFontSizeChange={setFontSize}
-          startVerse={startVerse}
-        />
+        <div className="px-[30px]">
+          <VerseReader
+            verses={verses}
+            fontSize={fontSize}
+            onFontSizeChange={handleFontSizeChange}
+            startVerse={startVerse}
+          />
+        </div>
       </div>
     </div>
   );

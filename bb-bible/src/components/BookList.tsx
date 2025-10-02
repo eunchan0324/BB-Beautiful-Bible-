@@ -10,12 +10,12 @@ interface BookListProps {
 
 export default function BookList({ books, onBookSelect, testament }: BookListProps) {
   return (
-    <div className="grid grid-cols-2 gap-3">
+    <div className="grid grid-cols-2 gap-[10px]">
       {books.map((book) => (
         <button
           key={book.id}
           onClick={() => onBookSelect(book)}
-          className="w-[153px] h-[56px] rounded-lg transition-colors hover:bg-gray-50 relative flex items-center"
+          className="w-[153px] h-[50px] rounded-lg transition-colors hover:bg-gray-50 relative flex items-center"
           style={{
             backgroundColor: '#FFFFFF',
             fontFamily: 'Pretendard, -apple-system, BlinkMacSystemFont, sans-serif'
@@ -23,7 +23,7 @@ export default function BookList({ books, onBookSelect, testament }: BookListPro
         >
           {/* 내부 동그라미 */}
           <div 
-            className="w-[36px] h-[36px] rounded-full flex items-center justify-center absolute"
+            className="w-[30px] h-[30px] rounded-full flex items-center justify-center absolute"
             style={{
               left: '10px',
               backgroundColor: testament === 'old' ? '#CCE5FF' : '#FFD8D6'
@@ -43,8 +43,8 @@ export default function BookList({ books, onBookSelect, testament }: BookListPro
           <span 
             className="font-semibold absolute"
             style={{
-              left: '58px',
-              fontSize: '13px',
+              left: '45px',
+              fontSize: '14px',
               color: '#414141'
             }}
           >

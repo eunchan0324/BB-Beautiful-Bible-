@@ -1,4 +1,5 @@
 import { Highlight, HighlightStorage } from '@/types/bible';
+import React from 'react';
 
 const HIGHLIGHT_STORAGE_KEY = 'bb-bible-highlights';
 
@@ -113,6 +114,16 @@ export function getHighlightClass(color: Highlight['color']): string {
   };
   
   return classMap[color];
+}
+
+// 커스텀 하이라이트 색상 스타일 - 텍스트 위치 변경 없이 배경색만 적용
+export function getCustomHighlightStyle(): React.CSSProperties {
+  return {
+    backgroundColor: '#DFD4C4',
+    borderRadius: '4px',
+    padding: '8px 12px',
+    margin: '0'
+  };
 }
 
 // 하이라이트 통계

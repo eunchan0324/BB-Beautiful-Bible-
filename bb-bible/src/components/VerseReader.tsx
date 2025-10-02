@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { BibleVerse, FontSize } from '@/types/bible';
-import { getHighlight, toggleHighlight, getHighlightClass } from '@/lib/highlight';
 import { createVerseKey } from '@/lib/bible-parser';
 import { FONT_SIZE_CLASSES } from '@/hooks/use-bible-store';
 
@@ -14,21 +13,9 @@ interface VerseReaderProps {
 }
 
 export default function VerseReader({ verses, fontSize, onFontSizeChange, startVerse }: VerseReaderProps) {
-  const [highlights, setHighlights] = useState<Record<string, any>>({});
+  // 임시 선택 상태 (저장되지 않음)
+  const [selectedVerses, setSelectedVerses] = useState<Set<string>>(new Set());
   const verseRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
-
-  // 컴포넌트 마운트 시 하이라이트 데이터 로드
-  useEffect(() => {
-    const loadedHighlights: Record<string, any> = {};
-    verses.forEach(verse => {
-      const verseKey = createVerseKey(verse.book, verse.chapter, verse.verse);
-      const highlight = getHighlight(verseKey);
-      if (highlight) {
-        loadedHighlights[verseKey] = highlight;
-      }
-    });
-    setHighlights(loadedHighlights);
-  }, [verses]);
 
   // 특정 절로 자동 스크롤
   useEffect(() => {
@@ -43,51 +30,82 @@ export default function VerseReader({ verses, fontSize, onFontSizeChange, startV
     }
   }, [startVerse, verses]);
 
+  // 구절 선택/해제 토글
   const handleVerseClick = (verse: BibleVerse) => {
     const verseKey = createVerseKey(verse.book, verse.chapter, verse.verse);
-    const isHighlighted = toggleHighlight(verseKey);
     
-    if (isHighlighted) {
-      const highlight = getHighlight(verseKey);
-      if (highlight) {
-        setHighlights(prev => ({
-          ...prev,
-          [verseKey]: highlight
-        }));
+    setSelectedVerses(prev => {
+      const newSelected = new Set(prev);
+      if (newSelected.has(verseKey)) {
+        newSelected.delete(verseKey);
+      } else {
+        newSelected.add(verseKey);
       }
-    } else {
-      setHighlights(prev => {
-        const newHighlights = { ...prev };
-        delete newHighlights[verseKey];
-        return newHighlights;
-      });
-    }
+      return newSelected;
+    });
   };
 
   return (
     <div className="space-y-4">
 
       {/* 구절들 */}
-      <div className="space-y-3">
-        {verses.map((verse) => {
+      <div style={{ marginTop: '-5px' }}>
+        {verses.map((verse, index) => {
           const verseKey = createVerseKey(verse.book, verse.chapter, verse.verse);
-          const highlight = highlights[verseKey];
-          const highlightClass = highlight ? getHighlightClass(highlight.color) : '';
+          const isSelected = selectedVerses.has(verseKey);
+          
+          // 이전 절이 선택되어 있는지 확인
+          const prevVerse = verses[index - 1];
+          const prevVerseKey = prevVerse ? createVerseKey(prevVerse.book, prevVerse.chapter, prevVerse.verse) : null;
+          const isPrevSelected = prevVerseKey ? selectedVerses.has(prevVerseKey) : false;
+          
+          // 연속 선택 체크 - 둘 다 선택되어 있고 연속된 절 번호일 때만
+          const isConsecutiveWithPrev = isSelected && isPrevSelected && 
+                                       prevVerse && (verse.verse === prevVerse.verse + 1);
 
           return (
             <div
               key={verseKey}
               ref={(el) => { verseRefs.current[verse.verse] = el; }}
               onClick={() => handleVerseClick(verse)}
-              className={`p-3 rounded-lg cursor-pointer transition-colors hover:bg-gray-50 ${
-                highlightClass || 'bg-white'
-              }`}
+              className="cursor-pointer transition-colors hover:bg-gray-50"
+              style={{ 
+                // 모든 절에 동일한 고정 여백 적용 (패딩 포함해서 계산)
+                marginBottom: fontSize === 'large' ? '5px' : '2px', // 30px - 8px, 20px - 8px
+                padding: '8px 0',
+                // 선택 시 배경색 적용
+                backgroundColor: isSelected ? '#DFD4C4' : 'transparent',
+                // 전체 너비로 확장 (상위 컨테이너 패딩 무시)
+                marginLeft: '-30px',
+                marginRight: '-30px',
+                paddingLeft: '30px',
+                paddingRight: '30px',
+                // 연속 선택 시 상하 여백 조정으로 이어지게 만들기
+                marginTop: isConsecutiveWithPrev ? '0px' : '0px' // marginBottom과 일치하도록 조정
+              }}
             >
-              <div className={`${FONT_SIZE_CLASSES[fontSize]}`}>
-                <span className="font-bold text-amber-800 mr-2">
+              <div className={`${FONT_SIZE_CLASSES[fontSize]}`} style={{ display: 'flex', alignItems: 'flex-start' }}>
+                <span 
+                  style={{
+                    fontFamily: 'Glory, sans-serif',
+                    fontWeight: 'medium',
+                    fontSize: fontSize === 'large' ? '16px' : '14px',
+                    color: '#3C3C3C',
+                    marginRight: '10px',
+                    flexShrink: 0
+                  }}
+                >
                   {verse.verse}
                 </span>
-                <span className="text-gray-900">
+                <span 
+                  style={{
+                    fontFamily: 'Pretendard, -apple-system, BlinkMacSystemFont, sans-serif',
+                    fontWeight: 'medium',
+                    fontSize: fontSize === 'large' ? '30px' : '18px',
+                    color: '#2A2A2A',
+                    lineHeight: '1.5'
+                  }}
+                >
                   {verse.text}
                 </span>
               </div>

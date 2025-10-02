@@ -18,15 +18,22 @@ export const metadata: Metadata = {
   description: "아름다운 성경 읽기 서비스",
   manifest: "/manifest.json",
   themeColor: "#d97706",
-  viewport: "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
     title: "BB",
   },
   icons: {
-    apple: "/icons/icon-192x192.png",
+    icon: "/icons/favicon.ico",
+    apple: "/icons/favicon.ico", // 임시로 favicon 사용
   },
+};
+
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 };
 
 export default function RootLayout({

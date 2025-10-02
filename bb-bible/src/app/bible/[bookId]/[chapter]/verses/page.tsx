@@ -95,8 +95,15 @@ export default function ChapterVersesPage() {
       <BreadcrumbTabs steps={breadcrumbSteps} />
 
       {/* 현재 선택 상태 */}
-      <div className="mb-6">
-        <h2 className="text-lg font-medium text-gray-900">
+      <div>
+        <h2 
+          className="font-semibold"
+          style={{
+            color: '#8D8881',
+            fontSize: '14px',
+            fontFamily: 'Pretendard, -apple-system, BlinkMacSystemFont, sans-serif'
+          }}
+        >
           {book.name} {chapterNumber}장
         </h2>
       </div>

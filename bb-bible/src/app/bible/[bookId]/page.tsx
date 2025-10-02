@@ -64,9 +64,16 @@ export default function BookChaptersPage() {
       <BreadcrumbTabs steps={breadcrumbSteps} />
 
       {/* 현재 선택 상태 */}
-      <div className="mb-6">
-        <h2 className="text-lg font-medium text-gray-900">
-          {book.name} <span className="text-sm text-gray-500 font-normal">총 {book.chapters}장</span>
+      <div>
+        <h2 
+          className="font-semibold"
+          style={{
+            color: '#8D8881',
+            fontSize: '14px',
+            fontFamily: 'Pretendard, -apple-system, BlinkMacSystemFont, sans-serif'
+          }}
+        >
+          {book.name} <span> - 총 {book.chapters}장</span>
         </h2>
       </div>
 
