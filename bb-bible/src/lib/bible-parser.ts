@@ -5,8 +5,8 @@ export function parseVerseKey(key: string): { book: string; chapter: number; ver
   // 범위 구절 처리: "신16:18-19" → "신16:18"로 변환 (시작 구절만 사용)
   const normalizedKey = key.replace(/(\d+):(\d+)-\d+/, '$1:$2');
   
-  // 한글과 영문을 모두 지원하는 정규식 (유니코드 지원)
-  const match = normalizedKey.match(/^([가-힣\w]+)(\d+):(\d+)$/);
+  // 한글과 영문만 매칭 (숫자는 제외)
+  const match = normalizedKey.match(/^([가-힣a-zA-Z]+)(\d+):(\d+)$/);
   if (!match) {
     throw new Error(`Invalid verse key format: ${key} (normalized: ${normalizedKey})`);
   }
@@ -42,21 +42,32 @@ export function getChapterCount(bibleData: ParsedBibleData, book: string): numbe
 
 // 특정 장의 절 수 계산
 export function getVerseCount(bibleData: ParsedBibleData, book: string, chapter: number): number {
-  if (!bibleData[book]?.[chapter]) return 0;
-  return Math.max(...Object.keys(bibleData[book][chapter]).map(Number));
+  const bookData = bibleData[book];
+  if (!bookData) return 0;
+  
+  const chapterData = (bookData as any)[chapter] || (bookData as any)[String(chapter)];
+  if (!chapterData) return 0;
+  
+  const verseNumbers = Object.keys(chapterData).map(Number);
+  return Math.max(...verseNumbers);
 }
 
 // 특정 장의 모든 구절 가져오기
 export function getChapterVerses(bibleData: ParsedBibleData, book: string, chapter: number): BibleVerse[] {
-  if (!bibleData[book]?.[chapter]) return [];
+  // 숫자와 문자열 키 모두 처리
+  const bookData = bibleData[book];
+  if (!bookData) return [];
+  
+  const chapterData = (bookData as any)[chapter] || (bookData as any)[String(chapter)];
+  if (!chapterData) return [];
   
   const verses: BibleVerse[] = [];
-  Object.entries(bibleData[book][chapter]).forEach(([verseNum, text]) => {
+  Object.entries(chapterData).forEach(([verseNum, text]) => {
     verses.push({
       book,
       chapter,
       verse: parseInt(verseNum, 10),
-      text: text.trim()
+      text: String(text).trim()
     });
   });
   

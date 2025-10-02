@@ -47,35 +47,17 @@ export default function ChapterReadPage() {
 
   // 성경 데이터 로드
   useEffect(() => {
-    console.log('데이터 로드 useEffect:', { 
-      hasParsedData: !!parsedData, 
-      storeLoading,
-      storeError 
-    });
-    
     if (!parsedData && !storeLoading && !storeError) {
-      console.log('데이터 로딩 시작 요청...');
       loadBibleData();
     }
-  }, [parsedData, storeLoading, storeError]);
+  }, [parsedData, storeLoading, storeError, loadBibleData]);
 
   // 구절 데이터 로드
   useEffect(() => {
-    console.log('구절 로드 useEffect:', { 
-      hasParsedData: !!parsedData, 
-      hasBook: !!book,
-      decodedBookId,
-      chapterNumber 
-    });
-    
     if (parsedData && book) {
       try {
         setIsLoading(true);
-        console.log('구절 파싱 시작:', decodedBookId, chapterNumber);
-        
-        const chapterVerses = getChapterVerses(parsedData, decodedBookId, chapterNumber);
-        console.log('구절 파싱 완료:', chapterVerses.length, '개 구절');
-        
+        const chapterVerses = getChapterVerses(parsedData, book.id, chapterNumber);
         setVerses(chapterVerses);
         setError(null);
       } catch (err) {
@@ -85,7 +67,7 @@ export default function ChapterReadPage() {
         setIsLoading(false);
       }
     }
-  }, [parsedData, book, decodedBookId, chapterNumber]);
+  }, [parsedData, book, chapterNumber]);
 
   if (!book) {
     return (

@@ -1,7 +1,10 @@
 'use client';
 
 import { useParams, useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
 import { findBookById } from '@/data/bible-books';
+import { useBibleStore } from '@/hooks/use-bible-store';
+import { getVerseCount } from '@/lib/bible-parser';
 import DropdownHeader from '@/components/DropdownHeader';
 import BreadcrumbTabs from '@/components/BreadcrumbTabs';
 import ChapterGrid from '@/components/ChapterGrid';
@@ -15,6 +18,26 @@ export default function ChapterVersesPage() {
   // 책 정보 찾기 (URL 디코딩 적용)
   const decodedBookId = decodeURIComponent(bookId);
   const book = findBookById(decodedBookId);
+  
+  const { loadBibleData, parsedData, isLoading } = useBibleStore();
+  const [verseCount, setVerseCount] = useState(30);
+
+  // 성경 데이터 로드
+  useEffect(() => {
+    if (!parsedData && !isLoading) {
+      loadBibleData();
+    }
+  }, [parsedData, isLoading, loadBibleData]);
+
+  // 실제 절 개수 계산
+  useEffect(() => {
+    if (parsedData && book && !isLoading) {
+      const count = getVerseCount(parsedData, book.id, chapterNumber);
+      if (count > 0) {
+        setVerseCount(count);
+      }
+    }
+  }, [parsedData, book, chapterNumber, isLoading]);
 
   if (!book) {
     return (
@@ -81,9 +104,6 @@ export default function ChapterVersesPage() {
     { id: 'verse', label: '절', active: true },
   ];
 
-  // 임시로 절 수를 30개로 설정 (나중에 실제 데이터에서 가져올 예정)
-  const estimatedVerses = 30;
-
   return (
     <div className="min-h-screen flex flex-col">
       {/* 고정 헤더 영역 */}
@@ -115,7 +135,7 @@ export default function ChapterVersesPage() {
       <div className="flex-1 overflow-y-auto px-[30px]" style={{ marginTop: '170px' }}>
         {/* 절 선택 그리드 */}
         <ChapterGrid
-          totalChapters={estimatedVerses}
+          totalChapters={verseCount}
           onChapterSelect={handleVerseSelect}
         />
       </div>
