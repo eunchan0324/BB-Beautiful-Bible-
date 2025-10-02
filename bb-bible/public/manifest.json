@@ -23,12 +23,6 @@
       "purpose": "maskable any"
     },
     {
-      "src": "/icons/BB-icon-128.png",
-      "sizes": "128x128",
-      "type": "image/png",
-      "purpose": "maskable any"
-    },
-    {
       "src": "/icons/BB-icon-144.png",
       "sizes": "144x144",
       "type": "image/png",
