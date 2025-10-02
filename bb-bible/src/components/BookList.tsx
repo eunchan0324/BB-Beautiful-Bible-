@@ -10,7 +10,7 @@ interface BookListProps {
 
 export default function BookList({ books, onBookSelect, testament }: BookListProps) {
   return (
-    <div className="grid grid-cols-2 gap-[10px] max-w-[316px] mx-auto">
+    <div className="grid grid-cols-2 gap-[10px]">
       {books.map((book) => (
         <button
           key={book.id}
@@ -18,8 +18,7 @@ export default function BookList({ books, onBookSelect, testament }: BookListPro
           className="h-[50px] rounded-lg transition-colors hover:bg-gray-50 relative flex items-center"
           style={{
             backgroundColor: '#FFFFFF',
-            fontFamily: 'Pretendard, -apple-system, BlinkMacSystemFont, sans-serif',
-            minWidth: '153px'
+            fontFamily: 'Pretendard, -apple-system, BlinkMacSystemFont, sans-serif'
           }}
         >
           {/* 내부 동그라미 */}

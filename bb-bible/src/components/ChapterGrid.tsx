@@ -10,7 +10,7 @@ export default function ChapterGrid({ totalChapters, onChapterSelect }: ChapterG
 
   return (
     <div className="mt-[30px]">
-      <div className="grid grid-cols-5 gap-[10px] max-w-[316px] mx-auto">
+      <div className="grid grid-cols-5 gap-[10px]">
         {chapters.map((chapter) => (
           <button
             key={chapter}
