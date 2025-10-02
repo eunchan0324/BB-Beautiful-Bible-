@@ -23,21 +23,21 @@ export default function ChapterReadPage() {
 
   const { loadBibleData, parsedData, isLoading: storeLoading, error: storeError } = useBibleStore();
 
-  // localStorage에서 폰트 크기 로드 (기본값: 'small')
-  const [fontSize, setFontSize] = useState<FontSize['size']>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('bb-bible-font-size');
-      return (saved === 'small' || saved === 'large') ? saved : 'small';
+  // 폰트 크기 상태 (기본값: 'small')
+  const [fontSize, setFontSize] = useState<FontSize['size']>('small');
+
+  // 클라이언트에서만 localStorage 읽기 (Hydration 이슈 방지)
+  useEffect(() => {
+    const saved = localStorage.getItem('bb-bible-font-size');
+    if (saved === 'small' || saved === 'large') {
+      setFontSize(saved);
     }
-    return 'small';
-  });
+  }, []);
 
   // 폰트 크기 변경 시 localStorage에 저장
   const handleFontSizeChange = (size: FontSize['size']) => {
     setFontSize(size);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('bb-bible-font-size', size);
-    }
+    localStorage.setItem('bb-bible-font-size', size);
   };
 
   // 책 정보 찾기

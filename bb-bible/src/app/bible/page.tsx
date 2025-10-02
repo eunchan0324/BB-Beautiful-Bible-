@@ -11,13 +11,17 @@ import TestamentDropdown from '@/components/TestamentDropdown';
 
 export default function BiblePage() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<'old' | 'new'>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('bb-bible-testament');
-      return (saved === 'old' || saved === 'new') ? saved : 'old';
+  const [activeTab, setActiveTab] = useState<'old' | 'new'>('old');
+  const [mounted, setMounted] = useState(false);
+
+  // 클라이언트에서만 localStorage 읽기 (Hydration 이슈 방지)
+  useEffect(() => {
+    setMounted(true);
+    const saved = localStorage.getItem('bb-bible-testament');
+    if (saved === 'old' || saved === 'new') {
+      setActiveTab(saved);
     }
-    return 'old';
-  });
+  }, []);
 
   const currentBooks = activeTab === 'old' ? OLD_TESTAMENT_BOOKS : NEW_TESTAMENT_BOOKS;
 
