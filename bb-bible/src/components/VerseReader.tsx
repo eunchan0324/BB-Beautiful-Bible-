@@ -8,11 +8,11 @@ import { FONT_SIZE_CLASSES } from '@/hooks/use-bible-store';
 interface VerseReaderProps {
   verses: BibleVerse[];
   fontSize: FontSize['size'];
-  onFontSizeChange: (size: FontSize['size']) => void;
+  onFontSizeChange?: (size: FontSize['size']) => void;
   startVerse?: number; // 스크롤할 시작 절 번호
 }
 
-export default function VerseReader({ verses, fontSize, onFontSizeChange, startVerse }: VerseReaderProps) {
+export default function VerseReader({ verses, fontSize, startVerse }: VerseReaderProps) {
   // 임시 선택 상태 (저장되지 않음)
   const [selectedVerses, setSelectedVerses] = useState<Set<string>>(new Set());
   const verseRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});

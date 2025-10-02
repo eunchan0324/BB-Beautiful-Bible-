@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
 import { ChevronDownIcon } from 'lucide-react';
 import { FontSize } from '@/types/bible';
 

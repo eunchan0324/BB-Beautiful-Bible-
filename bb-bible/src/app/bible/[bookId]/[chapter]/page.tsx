@@ -6,7 +6,6 @@ import { findBookById } from '@/data/bible-books';
 import { useBibleStore } from '@/hooks/use-bible-store';
 import { getChapterVerses } from '@/lib/bible-parser';
 import { BibleVerse, FontSize } from '@/types/bible';
-import DropdownHeader from '@/components/DropdownHeader';
 import VerseReader from '@/components/VerseReader';
 import StickyHeader from '@/components/StickyHeader';
 

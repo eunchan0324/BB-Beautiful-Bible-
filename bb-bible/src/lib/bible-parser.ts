@@ -45,6 +45,7 @@ export function getVerseCount(bibleData: ParsedBibleData, book: string, chapter:
   const bookData = bibleData[book];
   if (!bookData) return 0;
   
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const chapterData = (bookData as any)[chapter] || (bookData as any)[String(chapter)];
   if (!chapterData) return 0;
   
@@ -58,6 +59,7 @@ export function getChapterVerses(bibleData: ParsedBibleData, book: string, chapt
   const bookData = bibleData[book];
   if (!bookData) return [];
   
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const chapterData = (bookData as any)[chapter] || (bookData as any)[String(chapter)];
   if (!chapterData) return [];
   
