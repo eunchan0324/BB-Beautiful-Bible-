@@ -30,27 +30,33 @@ export default function BiblePage() {
   ];
 
   return (
-    <div className="min-h-screen px-[30px] pt-[69px]">
-      {/* 헤더 */}
-      <DropdownHeader
-        title=""
-        rightElement={
-          <TestamentDropdown
-            value={activeTab}
-            onChange={handleTestamentChange}
-          />
-        }
-      />
+    <div className="min-h-screen flex flex-col">
+      {/* 고정 헤더 영역 */}
+      <div className="fixed top-0 left-0 right-0 z-40 bg-[#F0EEE7] px-[30px] pt-[20px] pb-1">
+        {/* 헤더 */}
+        <DropdownHeader
+          title=""
+          rightElement={
+            <TestamentDropdown
+              value={activeTab}
+              onChange={handleTestamentChange}
+            />
+          }
+        />
 
-      {/* 책-장-절 브레드크럼 */}
-      <BreadcrumbTabs steps={breadcrumbSteps} />
+        {/* 책-장-절 브레드크럼 */}
+        <BreadcrumbTabs steps={breadcrumbSteps} />
+      </div>
 
-      {/* 성경책 목록 */}
-      <BookList
-        books={currentBooks}
-        onBookSelect={handleBookSelect}
-        testament={activeTab}
-      />
+      {/* 스크롤 가능한 컨텐츠 영역 */}
+      <div className="flex-1 overflow-y-auto px-[30px]" style={{ marginTop: '165px' }}>
+        {/* 성경책 목록 */}
+        <BookList
+          books={currentBooks}
+          onBookSelect={handleBookSelect}
+          testament={activeTab}
+        />
+      </div>
     </div>
   );
 }

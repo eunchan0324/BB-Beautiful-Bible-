@@ -54,34 +54,40 @@ export default function BookChaptersPage() {
   ];
 
   return (
-    <div className="min-h-screen px-[30px] pt-[69px]">
-      {/* 헤더 */}
-      <DropdownHeader
-        title=""
-      />
+    <div className="min-h-screen flex flex-col">
+      {/* 고정 헤더 영역 */}
+      <div className="fixed top-0 left-0 right-0 z-40 bg-[#F0EEE7] px-[30px] pt-[20px] pb-4">
+        {/* 헤더 */}
+        <DropdownHeader
+          title=""
+        />
 
-      {/* 책-장-절 탭 */}
-      <BreadcrumbTabs steps={breadcrumbSteps} />
+        {/* 책-장-절 탭 */}
+        <BreadcrumbTabs steps={breadcrumbSteps} />
 
-      {/* 현재 선택 상태 */}
-      <div>
-        <h2 
-          className="font-semibold"
-          style={{
-            color: '#8D8881',
-            fontSize: '14px',
-            fontFamily: 'Pretendard, -apple-system, BlinkMacSystemFont, sans-serif'
-          }}
-        >
-          {book.name} <span> - 총 {book.chapters}장</span>
-        </h2>
+        {/* 현재 선택 상태 */}
+        <div>
+          <h2 
+            className="font-semibold"
+            style={{
+              color: '#8D8881',
+              fontSize: '14px',
+              fontFamily: 'Pretendard, -apple-system, BlinkMacSystemFont, sans-serif'
+            }}
+          >
+            {book.name} <span> - 총 {book.chapters}장</span>
+          </h2>
+        </div>
       </div>
 
-      {/* 장 선택 그리드 */}
-      <ChapterGrid
-        totalChapters={book.chapters}
-        onChapterSelect={handleChapterSelect}
-      />
+      {/* 스크롤 가능한 컨텐츠 영역 */}
+      <div className="flex-1 overflow-y-auto px-[30px]" style={{ marginTop: '170px' }}>
+        {/* 장 선택 그리드 */}
+        <ChapterGrid
+          totalChapters={book.chapters}
+          onChapterSelect={handleChapterSelect}
+        />
+      </div>
     </div>
   );
 }
