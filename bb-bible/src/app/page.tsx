@@ -1,8 +1,26 @@
 'use client';
 
+import { useEffect } from 'react';
 import PWAInstallPrompt from '@/components/PWAInstallPrompt';
 
 export default function Home() {
+  // 홈 화면에서만 body 스크롤 막기
+  useEffect(() => {
+    // 스크롤 막기
+    document.body.style.overflow = 'hidden';
+    document.body.style.position = 'fixed';
+    document.body.style.width = '100%';
+    document.body.style.height = '100%';
+    
+    // 컴포넌트 언마운트 시 원복
+    return () => {
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+      document.body.style.height = '';
+    };
+  }, []);
+
   return (
       <div className="h-screen overflow-hidden flex flex-col items-center justify-center px-[30px]">
       {/* BB 로고 */}
