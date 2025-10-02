@@ -72,7 +72,7 @@ export default function StickyHeader({
             className="w-6 h-6" 
             style={{ 
               color: '#414141',
-              transform: 'translateY(2px)' // 수동 위치 조절
+              transform: 'translateY' // 수동 위치 조절
             }} 
           />
         </button>
