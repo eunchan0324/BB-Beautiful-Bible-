@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   title: "BB - Beautiful Bible",
   description: "아름다운 성경 읽기 서비스",
   manifest: "/manifest.json",
-  themeColor: "#8D8881",
+  themeColor: "#D2CFC8",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
