@@ -44,12 +44,20 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
+      <head>
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-touch-fullscreen" content="yes" />
+      </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen safe-area-full`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased safe-area-full`}
         style={{ 
           backgroundColor: '#F0EEE7',
           overscrollBehavior: 'none',
-          touchAction: 'pan-y'
+          touchAction: 'pan-y',
+          WebkitTouchCallout: 'none',
+          WebkitUserSelect: 'none',
+          userSelect: 'none'
         }}
       >
         <main className="pb-28 safe-area-top">
