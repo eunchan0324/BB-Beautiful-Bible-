@@ -13,7 +13,7 @@ export default function Home() {
         
         {/* 설명 텍스트 */}
         <div className="text-center leading-relaxed max-w-xs font-semibold text-lg text-[var(--text-primary)]">
-          '성경' 아이콘을 눌러
+          &quot;성경&quot; 아이콘을 눌러
           <br />
           성경읽기를 시작해보세요
         </div>
