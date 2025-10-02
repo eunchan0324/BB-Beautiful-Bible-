@@ -13,9 +13,9 @@ export default function Home() {
         
         {/* 설명 텍스트 */}
         <div className="text-center leading-relaxed max-w-xs font-semibold text-lg text-[var(--text-primary)]">
-          하루를 기록하는 가장 간단한
+          '성경' 아이콘을 눌러
           <br />
-          간단한 방법 간단한
+          성경읽기를 시작해보세요
         </div>
       </div>
 

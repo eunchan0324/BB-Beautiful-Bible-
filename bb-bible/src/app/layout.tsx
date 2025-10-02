@@ -14,18 +14,19 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "BB - Beautiful Bible",
+  title: "Beautiful Bible",
   description: "아름다운 성경 읽기 서비스",
   manifest: "/manifest.json",
-  themeColor: "#D2CFC8",
+  themeColor: "#F0EEE7",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "BB",
+    title: "Beautiful Bible",
   },
   icons: {
-    icon: "/icons/favicon.ico",
-    apple: "/icons/favicon.ico", // 임시로 favicon 사용
+    icon: "/icons/BB-icon-192.png",
+    apple: "/icons/BB-icon-192.png", // Apple용
+    shortcut: "/icons/BB-icon-192.png",
   },
 };
 
