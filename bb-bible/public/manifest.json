@@ -2,7 +2,7 @@
   "name": "BB - Beautiful Bible",
   "short_name": "BB",
   "description": "아름다운 성경 읽기 서비스",
-  "theme_color": "#D2CFC8",
+  "theme_color": "#F0EEE7",
   "background_color": "#F0EEE7",
   "display": "standalone",
   "orientation": "portrait",
