@@ -4,7 +4,7 @@ import PWAInstallPrompt from '@/components/PWAInstallPrompt';
 
 export default function Home() {
   return (
-      <div className="min-h-screen flex flex-col items-center justify-center px-[30px]">
+      <div className="h-screen overflow-hidden flex flex-col items-center justify-center px-[30px]">
       {/* BB 로고 */}
       <div className="flex flex-col items-center mb-8">
         <div className="text-8xl font-bold text-amber-800 mb-8">

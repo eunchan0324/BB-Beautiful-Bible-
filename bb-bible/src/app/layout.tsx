@@ -46,7 +46,11 @@ export default function RootLayout({
     <html lang="ko">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen safe-area-full`}
-        style={{ backgroundColor: '#F0EEE7' }}
+        style={{ 
+          backgroundColor: '#F0EEE7',
+          overscrollBehavior: 'none',
+          touchAction: 'pan-y'
+        }}
       >
         <main className="pb-28 safe-area-top">
           {children}
