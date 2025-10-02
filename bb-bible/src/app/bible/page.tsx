@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { OLD_TESTAMENT_BOOKS, NEW_TESTAMENT_BOOKS } from '@/data/bible-books';
 import { BibleBook } from '@/types/bible';
@@ -11,7 +11,13 @@ import TestamentDropdown from '@/components/TestamentDropdown';
 
 export default function BiblePage() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<'old' | 'new'>('old');
+  const [activeTab, setActiveTab] = useState<'old' | 'new'>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('bb-bible-testament');
+      return (saved === 'old' || saved === 'new') ? saved : 'old';
+    }
+    return 'old';
+  });
 
   const currentBooks = activeTab === 'old' ? OLD_TESTAMENT_BOOKS : NEW_TESTAMENT_BOOKS;
 
@@ -21,6 +27,9 @@ export default function BiblePage() {
 
   const handleTestamentChange = (testament: 'old' | 'new') => {
     setActiveTab(testament);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('bb-bible-testament', testament);
+    }
   };
 
   const breadcrumbSteps = [
