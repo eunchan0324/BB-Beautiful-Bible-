@@ -34,7 +34,9 @@ export default function BottomNavigation() {
       <div className="flex h-[101px] max-h-[13.47vh]">
         {navItems.map((item) => {
           const Icon = item.icon;
-          const isActive = pathname === item.path;
+          const isActive = item.id === 'bible'
+            ? (pathname === '/bible' || pathname.startsWith('/bible/'))
+            : pathname === item.path;
           
           return (
             <button
