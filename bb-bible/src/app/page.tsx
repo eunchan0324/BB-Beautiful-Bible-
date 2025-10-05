@@ -2,6 +2,8 @@
 
 import { useEffect } from 'react';
 import PWAInstallPrompt from '@/components/PWAInstallPrompt';
+import Image from 'next/image';
+import BB_logo from '../../public/icons/BB_logo_main(180px).png'
 
 export default function Home() {
   // 홈 화면에서만 body 스크롤 막기
@@ -25,8 +27,8 @@ export default function Home() {
       <div className="h-screen overflow-hidden flex flex-col items-center justify-center px-[30px]">
       {/* BB 로고 */}
       <div className="flex flex-col items-center mb-8">
-        <div className="text-8xl font-bold text-amber-800 mb-8">
-          BB
+        <div className="mb-[62px]">
+          <Image src={BB_logo} alt="BB Logo" width={100} height={100} />
         </div>
         
         {/* 설명 텍스트 */}
