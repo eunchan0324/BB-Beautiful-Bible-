@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import BottomNavigation from "@/components/BottomNavigation";
+import ConditionalBottomNav from "@/components/ConditionalBottomNav";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -45,6 +45,10 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <head>
+      <link 
+          rel="stylesheet" 
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" 
+        />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-touch-fullscreen" content="yes" />
@@ -63,7 +67,7 @@ export default function RootLayout({
         <main className="pb-28 safe-area-top">
           {children}
         </main>
-        <BottomNavigation />
+        <ConditionalBottomNav />
       </body>
     </html>
   );
