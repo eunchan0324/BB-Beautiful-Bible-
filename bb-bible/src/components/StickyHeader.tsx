@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState } from 'react';
 import { ChevronDownIcon } from 'lucide-react';
 import { FontSize } from '@/types/bible';
 
@@ -8,6 +8,7 @@ interface StickyHeaderProps {
   bookName: string;
   chapterNumber: number;
   fontSize: FontSize['size'];
+  isVisible: boolean;
   onBookChapterSelect: () => void;
   onFontSizeChange: (size: FontSize['size']) => void;
 }
@@ -16,37 +17,14 @@ export default function StickyHeader({
   bookName, 
   chapterNumber, 
   fontSize,
+  isVisible,
   onBookChapterSelect, 
   onFontSizeChange 
 }: StickyHeaderProps) {
-  const [isVisible, setIsVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const headerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      
-      // 스크롤 방향에 따라 헤더 표시/숨김
-      if (currentScrollY < lastScrollY || currentScrollY < 10) {
-        // 위로 스크롤하거나 최상단 근처일 때 표시
-        setIsVisible(true);
-      } else if (currentScrollY > lastScrollY && currentScrollY > 100) {
-        // 아래로 스크롤하고 100px 이상일 때 숨김
-        setIsVisible(false);
-      }
-
-      setLastScrollY(currentScrollY);
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [lastScrollY]);
 
   return (
     <div
-      ref={headerRef}
       className={`fixed left-0 right-0 z-50 bg-white px-[30px] py-5 transition-all duration-300 ease-in-out ${
         isVisible ? 'top-0 opacity-100' : '-top-full opacity-0'
       }`}

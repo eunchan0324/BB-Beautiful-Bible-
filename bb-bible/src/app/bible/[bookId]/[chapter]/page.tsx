@@ -2,12 +2,13 @@
 
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import { findBookById } from '@/data/bible-books';
+import { findBookById, BIBLE_BOOKS } from '@/data/bible-books';
 import { useBibleStore } from '@/hooks/use-bible-store';
 import { getChapterVerses } from '@/lib/bible-parser';
 import { BibleVerse, FontSize } from '@/types/bible';
 import VerseReader from '@/components/VerseReader';
 import StickyHeader from '@/components/StickyHeader';
+import ChapterNavigation from '@/components/ChapterNavigation';
 
 export default function ChapterReadPage() {
   const params = useParams();
@@ -25,6 +26,10 @@ export default function ChapterReadPage() {
 
   // 폰트 크기 상태 (기본값: 'small')
   const [fontSize, setFontSize] = useState<FontSize['size']>('small');
+
+  // 스크롤 상태 (헤더와 네비게이션 제어)
+  const [isHeaderVisible, setIsHeaderVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
 
   // 클라이언트에서만 localStorage 읽기 (Hydration 이슈 방지)
   useEffect(() => {
@@ -67,6 +72,27 @@ export default function ChapterReadPage() {
       }
     }
   }, [parsedData, book, chapterNumber]);
+
+  // 스크롤 감지 (헤더와 네비게이션 반대로 제어)
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      
+      // 스크롤 방향에 따라 헤더/네비게이션 표시/숨김
+      if (currentScrollY < lastScrollY || currentScrollY < 10) {
+        // 위로 스크롤하거나 최상단 근처일 때 헤더 표시, 네비게이션 숨김
+        setIsHeaderVisible(true);
+      } else if (currentScrollY > lastScrollY && currentScrollY > 100) {
+        // 아래로 스크롤하고 100px 이상일 때 헤더 숨김, 네비게이션 표시
+        setIsHeaderVisible(false);
+      }
+
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [lastScrollY]);
 
   if (!book) {
     return (
@@ -143,6 +169,40 @@ export default function ChapterReadPage() {
     router.push('/bible');
   };
 
+  // 이전/다음 장 URL 계산
+  const getPrevNextUrls = () => {
+    let prevUrl: string | undefined;
+    let nextUrl: string | undefined;
+
+    // 이전 장
+    if (chapterNumber > 1) {
+      prevUrl = `/bible/${bookId}/${chapterNumber - 1}`;
+    } else {
+      // 현재 책의 첫 장이면 이전 책의 마지막 장으로
+      const currentBookIndex = BIBLE_BOOKS.findIndex(b => b.id === book.id);
+      if (currentBookIndex > 0) {
+        const prevBook = BIBLE_BOOKS[currentBookIndex - 1];
+        prevUrl = `/bible/${prevBook.id}/${prevBook.chapters}`;
+      }
+    }
+
+    // 다음 장
+    if (chapterNumber < book.chapters) {
+      nextUrl = `/bible/${bookId}/${chapterNumber + 1}`;
+    } else {
+      // 현재 책의 마지막 장이면 다음 책의 첫 장으로
+      const currentBookIndex = BIBLE_BOOKS.findIndex(b => b.id === book.id);
+      if (currentBookIndex < BIBLE_BOOKS.length - 1) {
+        const nextBook = BIBLE_BOOKS[currentBookIndex + 1];
+        nextUrl = `/bible/${nextBook.id}/1`;
+      }
+    }
+
+    return { prevUrl, nextUrl };
+  };
+
+  const { prevUrl, nextUrl } = getPrevNextUrls();
+
   return (
     <div 
       className="min-h-screen"
@@ -153,6 +213,7 @@ export default function ChapterReadPage() {
         bookName={book.name}
         chapterNumber={chapterNumber}
         fontSize={fontSize}
+        isVisible={isHeaderVisible}
         onBookChapterSelect={handleBookChapterSelect}
         onFontSizeChange={handleFontSizeChange}
       />
@@ -169,6 +230,15 @@ export default function ChapterReadPage() {
           />
         </div>
       </div>
+
+      {/* 하단 장 네비게이션 (스크롤 내릴 때만 표시) */}
+      <ChapterNavigation
+        bookName={book.name}
+        chapter={chapterNumber}
+        isVisible={!isHeaderVisible}
+        prevUrl={prevUrl}
+        nextUrl={nextUrl}
+      />
     </div>
   );
 }
