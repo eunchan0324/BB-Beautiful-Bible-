@@ -41,15 +41,18 @@ export default function BookChaptersPage() {
     router.push(`/bible/${bookId}/${chapter}/verses`);
   };
 
+  const isPsalms = book.name === '시편';
+  const unit = isPsalms ? '편' : '장';
+
   const breadcrumbSteps = [
-    { 
-      id: 'book', 
-      label: '책', 
-      active: false, 
+    {
+      id: 'book',
+      label: '책',
+      active: false,
       clickable: true,
       onClick: () => router.push('/bible')
     },
-    { id: 'chapter', label: '장', active: true },
+    { id: 'chapter', label: unit, active: true },
     { id: 'verse', label: '절', active: false },
   ];
 
@@ -67,7 +70,7 @@ export default function BookChaptersPage() {
 
         {/* 현재 선택 상태 */}
         <div>
-          <h2 
+          <h2
             className="font-semibold"
             style={{
               color: '#8D8881',
@@ -75,7 +78,7 @@ export default function BookChaptersPage() {
               fontFamily: 'Pretendard, -apple-system, BlinkMacSystemFont, sans-serif'
             }}
           >
-            {book.name} <span> - 총 {book.chapters}장</span>
+            {book.name} <span> - 총 {book.chapters}{unit}</span>
           </h2>
         </div>
       </div>
