@@ -4,6 +4,8 @@ import { useState, useEffect, useRef } from 'react';
 import { BibleVerse, FontSize } from '@/types/bible';
 import { createVerseKey } from '@/lib/bible-parser';
 import { FONT_SIZE_CLASSES } from '@/hooks/use-bible-store';
+import HighlightActionBar from './HighlightActionBar';
+import Toast from './Toast';
 
 interface VerseReaderProps {
   verses: BibleVerse[];
@@ -15,6 +17,7 @@ interface VerseReaderProps {
 export default function VerseReader({ verses, fontSize, startVerse }: VerseReaderProps) {
   // 임시 선택 상태 (저장되지 않음)
   const [selectedVerses, setSelectedVerses] = useState<Set<string>>(new Set());
+  const [showToast, setShowToast] = useState(false);
   const verseRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
 
   // 특정 절로 자동 스크롤
@@ -33,7 +36,7 @@ export default function VerseReader({ verses, fontSize, startVerse }: VerseReade
   // 구절 선택/해제 토글
   const handleVerseClick = (verse: BibleVerse) => {
     const verseKey = createVerseKey(verse.book, verse.chapter, verse.verse);
-    
+
     setSelectedVerses(prev => {
       const newSelected = new Set(prev);
       if (newSelected.has(verseKey)) {
@@ -45,75 +48,154 @@ export default function VerseReader({ verses, fontSize, startVerse }: VerseReade
     });
   };
 
+  const handleClearSelection = () => {
+    setSelectedVerses(new Set());
+  };
+
+  const handleCopy = async () => {
+    if (selectedVerses.size === 0) return;
+
+    // 선택된 구절 필터링 및 정렬
+    const selectedList = verses.filter(v =>
+      selectedVerses.has(createVerseKey(v.book, v.chapter, v.verse))
+    );
+
+    // 텍스트 포맷팅
+    // 예: [창세기 1:1] 태초에 하나님이...
+    // 여러 절일 경우:
+    // [창세기 1:1-2]
+    // 1. 태초에...
+    // 2. 땅이...
+    // 또는 단순 나열. 여기서는 단순 나열로 구현하고 필요시 개선.
+
+    const formattedText = selectedList.map(v =>
+      `[${v.book} ${v.chapter}:${v.verse}] ${v.text}`
+    ).join('\n\n');
+
+    try {
+      await navigator.clipboard.writeText(formattedText);
+      setShowToast(true);
+      handleClearSelection();
+    } catch (err) {
+      console.error('Failed to copy text: ', err);
+    }
+  };
+
+  const handleShare = async () => {
+    if (selectedVerses.size === 0) return;
+
+    const selectedList = verses.filter(v =>
+      selectedVerses.has(createVerseKey(v.book, v.chapter, v.verse))
+    );
+
+    const formattedText = selectedList.map(v =>
+      `[${v.book} ${v.chapter}:${v.verse}] ${v.text}`
+    ).join('\n\n');
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `BB Bible - ${selectedList[0].book} ${selectedList[0].chapter}장`,
+          text: formattedText,
+        });
+        handleClearSelection();
+      } catch (err) {
+        console.error('Error sharing:', err);
+      }
+    } else {
+      // Fallback for browsers that don't support share API (e.g. desktop)
+      // For now, just copy to clipboard as fallback or do nothing.
+      // User specifically asked for share menu which implies mobile.
+      // We can reuse handleCopy as fallback.
+      handleCopy();
+    }
+  };
+
   return (
-    <div className="space-y-4">
+    <>
+      <div className="space-y-4">
 
-      {/* 구절들 */}
-      <div style={{ marginTop: '-5px' }}>
-        {verses.map((verse, index) => {
-          const verseKey = createVerseKey(verse.book, verse.chapter, verse.verse);
-          const isSelected = selectedVerses.has(verseKey);
-          
-          // 이전 절이 선택되어 있는지 확인
-          const prevVerse = verses[index - 1];
-          const prevVerseKey = prevVerse ? createVerseKey(prevVerse.book, prevVerse.chapter, prevVerse.verse) : null;
-          const isPrevSelected = prevVerseKey ? selectedVerses.has(prevVerseKey) : false;
-          
-          // 연속 선택 체크 - 둘 다 선택되어 있고 연속된 절 번호일 때만
-          const isConsecutiveWithPrev = isSelected && isPrevSelected && 
-                                       prevVerse && (verse.verse === prevVerse.verse + 1);
+        {/* 구절들 */}
+        <div style={{ marginTop: '-5px' }}>
+          {verses.map((verse, index) => {
+            const verseKey = createVerseKey(verse.book, verse.chapter, verse.verse);
+            const isSelected = selectedVerses.has(verseKey);
 
-          return (
-            <div
-              key={verseKey}
-              ref={(el) => { verseRefs.current[verse.verse] = el; }}
-              onClick={() => handleVerseClick(verse)}
-              className="cursor-pointer transition-colors hover:bg-gray-50"
-              style={{ 
-                // 모든 절에 동일한 고정 여백 적용 (패딩 포함해서 계산)
-                marginBottom: fontSize === 'large' ? '5px' : '2px', // 30px - 8px, 20px - 8px
-                padding: '8px 0',
-                // 선택 시 배경색 적용
-                backgroundColor: isSelected ? '#DFD4C4' : 'transparent',
-                // 전체 너비로 확장 (상위 컨테이너 패딩 무시)
-                marginLeft: '-30px',
-                marginRight: '-30px',
-                paddingLeft: '30px',
-                paddingRight: '30px',
-                // 연속 선택 시 상하 여백 조정으로 이어지게 만들기
-                marginTop: isConsecutiveWithPrev ? '0px' : '0px' // marginBottom과 일치하도록 조정
-              }}
-            >
-              <div className={`${FONT_SIZE_CLASSES[fontSize]}`} style={{ display: 'flex', alignItems: 'flex-start' }}>
-                <span 
-                  style={{
-                    fontFamily: 'Glory, sans-serif',
-                    fontWeight: 'medium',
-                    fontSize: fontSize === 'large' ? '16px' : '14px',
-                    color: '#3C3C3C',
-                    marginRight: '10px',
-                    flexShrink: 0,
-                    marginTop: fontSize === 'large' ? '3px' : '2px'
-                  }}
-                >
-                  {verse.verse}
-                </span>
-                <span 
-                  style={{
-                    fontFamily: 'Pretendard, -apple-system, BlinkMacSystemFont, sans-serif',
-                    fontWeight: 'medium',
-                    fontSize: fontSize === 'large' ? '30px' : '18px',
-                    color: '#2A2A2A',
-                    lineHeight: '1.5'
-                  }}
-                >
-                  {verse.text}
-                </span>
+            // 이전 절이 선택되어 있는지 확인
+            const prevVerse = verses[index - 1];
+            const prevVerseKey = prevVerse ? createVerseKey(prevVerse.book, prevVerse.chapter, prevVerse.verse) : null;
+            const isPrevSelected = prevVerseKey ? selectedVerses.has(prevVerseKey) : false;
+
+            // 연속 선택 체크 - 둘 다 선택되어 있고 연속된 절 번호일 때만
+            const isConsecutiveWithPrev = isSelected && isPrevSelected &&
+              prevVerse && (verse.verse === prevVerse.verse + 1);
+
+            return (
+              <div
+                key={verseKey}
+                ref={(el) => { verseRefs.current[verse.verse] = el; }}
+                onClick={() => handleVerseClick(verse)}
+                className="cursor-pointer transition-colors hover:bg-gray-50"
+                style={{
+                  // 모든 절에 동일한 고정 여백 적용 (패딩 포함해서 계산)
+                  marginBottom: fontSize === 'large' ? '5px' : '2px', // 30px - 8px, 20px - 8px
+                  padding: '8px 0',
+                  // 선택 시 배경색 적용
+                  backgroundColor: isSelected ? '#DFD4C4' : 'transparent',
+                  // 전체 너비로 확장 (상위 컨테이너 패딩 무시)
+                  marginLeft: '-30px',
+                  marginRight: '-30px',
+                  paddingLeft: '30px',
+                  paddingRight: '30px',
+                  // 연속 선택 시 상하 여백 조정으로 이어지게 만들기
+                  marginTop: isConsecutiveWithPrev ? '0px' : '0px' // marginBottom과 일치하도록 조정
+                }}
+              >
+                <div className={`${FONT_SIZE_CLASSES[fontSize]}`} style={{ display: 'flex', alignItems: 'flex-start' }}>
+                  <span
+                    style={{
+                      fontFamily: 'Glory, sans-serif',
+                      fontWeight: 'medium',
+                      fontSize: fontSize === 'large' ? '16px' : '14px',
+                      color: '#3C3C3C',
+                      marginRight: '10px',
+                      flexShrink: 0,
+                      marginTop: fontSize === 'large' ? '3px' : '2px'
+                    }}
+                  >
+                    {verse.verse}
+                  </span>
+                  <span
+                    style={{
+                      fontFamily: 'Pretendard, -apple-system, BlinkMacSystemFont, sans-serif',
+                      fontWeight: 'medium',
+                      fontSize: fontSize === 'large' ? '30px' : '18px',
+                      color: '#2A2A2A',
+                      lineHeight: '1.5'
+                    }}
+                  >
+                    {verse.text}
+                  </span>
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
-    </div>
+
+      <HighlightActionBar
+        selectedCount={selectedVerses.size}
+        isVisible={selectedVerses.size > 0}
+        onCopy={handleCopy}
+        onShare={handleShare}
+        onClear={handleClearSelection}
+      />
+
+      <Toast
+        message="클립보드에 복사되었습니다"
+        isVisible={showToast}
+        onClose={() => setShowToast(false)}
+      />
+    </>
   );
 }
