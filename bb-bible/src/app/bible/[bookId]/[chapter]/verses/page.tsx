@@ -18,7 +18,7 @@ export default function ChapterVersesPage() {
   // 책 정보 찾기 (URL 디코딩 적용)
   const decodedBookId = decodeURIComponent(bookId);
   const book = findBookById(decodedBookId);
-  
+
   const { loadBibleData, parsedData, isLoading } = useBibleStore();
   const [verseCount, setVerseCount] = useState(30);
 
@@ -86,18 +86,21 @@ export default function ChapterVersesPage() {
     router.push(`/bible/${bookId}/${chapterNumber}?startVerse=${verse}`);
   };
 
+  const isPsalms = book.name === '시편';
+  const unit = isPsalms ? '편' : '장';
+
   const breadcrumbSteps = [
-    { 
-      id: 'book', 
-      label: '책', 
-      active: false, 
+    {
+      id: 'book',
+      label: '책',
+      active: false,
       clickable: true,
       onClick: () => router.push('/bible')
     },
-    { 
-      id: 'chapter', 
-      label: '장', 
-      active: false, 
+    {
+      id: 'chapter',
+      label: unit,
+      active: false,
       clickable: true,
       onClick: () => router.push(`/bible/${bookId}`)
     },
@@ -118,7 +121,7 @@ export default function ChapterVersesPage() {
 
         {/* 현재 선택 상태 */}
         <div>
-          <h2 
+          <h2
             className="font-semibold"
             style={{
               color: '#8D8881',
@@ -126,7 +129,7 @@ export default function ChapterVersesPage() {
               fontFamily: 'Pretendard, -apple-system, BlinkMacSystemFont, sans-serif'
             }}
           >
-            {book.name} {chapterNumber}장
+            {book.name} {chapterNumber}{unit}
           </h2>
         </div>
       </div>
