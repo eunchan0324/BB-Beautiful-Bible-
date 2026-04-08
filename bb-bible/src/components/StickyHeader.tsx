@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState } from 'react';
 import { ChevronDownIcon } from 'lucide-react';
 import { FontSize } from '@/types/bible';
 
@@ -8,48 +8,25 @@ interface StickyHeaderProps {
   bookName: string;
   chapterNumber: number;
   fontSize: FontSize['size'];
+  isVisible: boolean;
   onBookChapterSelect: () => void;
   onFontSizeChange: (size: FontSize['size']) => void;
 }
 
-export default function StickyHeader({ 
-  bookName, 
-  chapterNumber, 
+export default function StickyHeader({
+  bookName,
+  chapterNumber,
   fontSize,
-  onBookChapterSelect, 
-  onFontSizeChange 
+  isVisible,
+  onBookChapterSelect,
+  onFontSizeChange
 }: StickyHeaderProps) {
-  const [isVisible, setIsVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const headerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      
-      // 스크롤 방향에 따라 헤더 표시/숨김
-      if (currentScrollY < lastScrollY || currentScrollY < 10) {
-        // 위로 스크롤하거나 최상단 근처일 때 표시
-        setIsVisible(true);
-      } else if (currentScrollY > lastScrollY && currentScrollY > 100) {
-        // 아래로 스크롤하고 100px 이상일 때 숨김
-        setIsVisible(false);
-      }
-
-      setLastScrollY(currentScrollY);
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [lastScrollY]);
 
   return (
     <div
-      ref={headerRef}
-      className={`fixed left-0 right-0 z-50 bg-white px-[30px] py-5 transition-all duration-300 ease-in-out ${
-        isVisible ? 'top-0 opacity-100' : '-top-full opacity-0'
-      }`}
+      className={`fixed left-0 right-0 z-50 bg-white px-[30px] py-5 transition-all duration-300 ease-in-out ${isVisible ? 'top-0 opacity-100' : '-top-full opacity-0'
+        }`}
     >
       <div className="flex items-center justify-between">
         {/* 왼쪽: 책+장 텍스트 버튼 */}
@@ -57,7 +34,7 @@ export default function StickyHeader({
           onClick={onBookChapterSelect}
           className="flex items-center gap-1 hover:opacity-70 transition-opacity"
         >
-          <span 
+          <span
             className="font-semibold"
             style={{
               fontSize: '22px',
@@ -65,14 +42,14 @@ export default function StickyHeader({
               fontFamily: 'Pretendard, -apple-system, BlinkMacSystemFont, sans-serif'
             }}
           >
-            {bookName} {chapterNumber}장
+            {bookName} {chapterNumber}{bookName === '시편' ? '편' : '장'}
           </span>
-          <ChevronDownIcon 
-            className="w-6 h-6" 
-            style={{ 
+          <ChevronDownIcon
+            className="w-6 h-6"
+            style={{
               color: '#414141',
               transform: 'translateY' // 수동 위치 조절
-            }} 
+            }}
           />
         </button>
 
@@ -89,7 +66,7 @@ export default function StickyHeader({
               padding: '0'
             }}
           >
-            <span 
+            <span
               className="font-bold absolute"
               style={{
                 fontSize: '14px',
@@ -101,22 +78,22 @@ export default function StickyHeader({
             >
               {fontSize === 'small' ? '작은글' : '큰글'}
             </span>
-            <ChevronDownIcon 
-              className="absolute w-3.5 h-3.5" 
-              style={{ 
+            <ChevronDownIcon
+              className="absolute w-3.5 h-3.5"
+              style={{
                 color: '#414141',
                 width: '14px',
                 height: '14px',
                 right: '8px',
                 top: '50%',
                 transform: 'translateY(-50%)'
-              }} 
+              }}
             />
           </button>
-          
+
           {/* 드롭다운 메뉴 */}
           {isDropdownOpen && (
-            <div 
+            <div
               className="absolute top-full right-0 mt-1 rounded-md z-50"
               style={{
                 backgroundColor: 'rgba(240, 238, 231, 0.8)',
@@ -146,7 +123,7 @@ export default function StickyHeader({
                 >
                   작은글
                 </button>
-                <div 
+                <div
                   className="h-px"
                   style={{ backgroundColor: 'rgba(217, 217, 217, 0.8)' }}
                 />
