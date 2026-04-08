@@ -28,7 +28,10 @@ export default function SelectionActionBar({
   onHighlightColorSelect,
 }: SelectionActionBarProps) {
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-40 px-5 pb-4 safe-area-bottom">
+    <div
+      className="fixed left-0 right-0 z-40 px-5 safe-area-bottom"
+      style={{ bottom: '16px' }}
+    >
       {isColorPickerOpen && (
         <div className="mx-auto mb-3 flex max-w-[768px] justify-end">
           <div
@@ -65,7 +68,7 @@ export default function SelectionActionBar({
                   backgroundColor: HIGHLIGHT_BACKGROUND_COLORS[color],
                   borderColor: '#D2CFC8',
                 }}
-                aria-label={`${color} 하이라이트`}
+                aria-label={`${color} highlight`}
               />
             ))}
           </div>

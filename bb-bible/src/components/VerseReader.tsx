@@ -239,17 +239,18 @@ export default function VerseReader({ verses, fontSize, startVerse }: VerseReade
               style={{
                 marginBottom: fontSize === 'large' ? '5px' : '2px',
                 padding: '8px 0',
-                backgroundColor: isSelected
-                  ? '#E9E2D7'
-                  : highlightColor
-                    ? HIGHLIGHT_BACKGROUND_COLORS[highlightColor]
-                    : 'transparent',
+                backgroundColor: highlightColor
+                  ? HIGHLIGHT_BACKGROUND_COLORS[highlightColor]
+                  : 'transparent',
                 marginLeft: '-30px',
                 marginRight: '-30px',
                 paddingLeft: '30px',
                 paddingRight: '30px',
                 marginTop: isConsecutiveWithPrev ? '0px' : '0px',
-                borderRadius: '12px',
+                borderRadius: '0px',
+                boxShadow: 'none',
+                transform: 'none',
+                transition: 'background-color 160ms ease',
               }}
             >
               <div
@@ -276,6 +277,10 @@ export default function VerseReader({ verses, fontSize, startVerse }: VerseReade
                     fontSize: fontSize === 'large' ? '30px' : '18px',
                     color: '#2A2A2A',
                     lineHeight: '1.5',
+                    textDecoration: isSelected ? 'underline' : 'none',
+                    textDecorationColor: '#55524F',
+                    textDecorationThickness: '3px',
+                    textUnderlineOffset: '6px',
                   }}
                 >
                   {verse.text}
