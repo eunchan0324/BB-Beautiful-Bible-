@@ -1,91 +1,262 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-import { BibleVerse, FontSize } from '@/types/bible';
-import { createVerseKey } from '@/lib/bible-parser';
+import { useEffect, useRef, useState } from 'react';
+import SelectionActionBar from '@/components/SelectionActionBar';
+import ToastMessage from '@/components/ToastMessage';
 import { FONT_SIZE_CLASSES } from '@/hooks/use-bible-store';
+import { createVerseKey } from '@/lib/bible-parser';
+import {
+  addHighlight,
+  HIGHLIGHT_BACKGROUND_COLORS,
+  loadHighlights,
+  removeHighlight,
+} from '@/lib/highlight';
+import { formatSelectedReference, formatSelectedText } from '@/lib/verse-selection';
+import { BibleVerse, FontSize, HighlightColor } from '@/types/bible';
 
 interface VerseReaderProps {
   verses: BibleVerse[];
   fontSize: FontSize['size'];
   onFontSizeChange?: (size: FontSize['size']) => void;
-  startVerse?: number; // 스크롤할 시작 절 번호
+  startVerse?: number;
 }
 
+type ToastState = {
+  id: number;
+  message: string;
+} | null;
+
 export default function VerseReader({ verses, fontSize, startVerse }: VerseReaderProps) {
-  // 임시 선택 상태 (저장되지 않음)
   const [selectedVerses, setSelectedVerses] = useState<Set<string>>(new Set());
+  const [highlightedVerses, setHighlightedVerses] = useState<Record<string, HighlightColor>>({});
+  const [isColorPickerOpen, setIsColorPickerOpen] = useState(false);
+  const [toast, setToast] = useState<ToastState>(null);
   const verseRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
 
-  // 특정 절로 자동 스크롤
+  const hasSelection = selectedVerses.size > 0;
+  const selectedVerseList = verses.filter((verse) =>
+    selectedVerses.has(createVerseKey(verse.book, verse.chapter, verse.verse)),
+  );
+  const selectedVerseNumbers = selectedVerseList.map((verse) => verse.verse).sort((a, b) => a - b);
+  const selectedReference = formatSelectedReference(verses, selectedVerseNumbers);
+  const selectedText = formatSelectedText(selectedVerseList);
+
   useEffect(() => {
     if (startVerse && verseRefs.current[startVerse]) {
-      // 약간의 지연을 두고 스크롤 (DOM 렌더링 완료 후)
       setTimeout(() => {
         verseRefs.current[startVerse]?.scrollIntoView({
           behavior: 'smooth',
-          block: 'center'
+          block: 'center',
         });
       }, 100);
     }
   }, [startVerse, verses]);
 
-  // 구절 선택/해제 토글
-  const handleVerseClick = (verse: BibleVerse) => {
-    const verseKey = createVerseKey(verse.book, verse.chapter, verse.verse);
-    
-    setSelectedVerses(prev => {
-      const newSelected = new Set(prev);
-      if (newSelected.has(verseKey)) {
-        newSelected.delete(verseKey);
-      } else {
-        newSelected.add(verseKey);
-      }
-      return newSelected;
+  useEffect(() => {
+    const storedHighlights = loadHighlights().highlights;
+    const nextHighlights = Object.fromEntries(
+      Object.entries(storedHighlights).map(([verseKey, highlight]) => [verseKey, highlight.color]),
+    ) as Record<string, HighlightColor>;
+
+    setHighlightedVerses(nextHighlights);
+  }, []);
+
+  useEffect(() => {
+    if (!hasSelection) {
+      setIsColorPickerOpen(false);
+    }
+  }, [hasSelection]);
+
+  useEffect(() => {
+    if (!toast) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setToast((currentToast) => (currentToast?.id === toast.id ? null : currentToast));
+    }, 1800);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [toast]);
+
+  const showToast = (message: string) => {
+    setToast({
+      id: Date.now(),
+      message,
     });
   };
 
-  return (
-    <div className="space-y-4">
+  const handleVerseClick = (verse: BibleVerse) => {
+    const verseKey = createVerseKey(verse.book, verse.chapter, verse.verse);
 
-      {/* 구절들 */}
+    setSelectedVerses((prev) => {
+      const next = new Set(prev);
+
+      if (next.has(verseKey)) {
+        next.delete(verseKey);
+      } else {
+        next.add(verseKey);
+      }
+
+      return next;
+    });
+  };
+
+  const handleClearSelection = () => {
+    setSelectedVerses(new Set());
+    setIsColorPickerOpen(false);
+  };
+
+  const handleCopySelection = async () => {
+    if (!selectedText) {
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(selectedText);
+      showToast('선택한 구절을 복사했어요.');
+      handleClearSelection();
+    } catch (error) {
+      console.error('복사에 실패했습니다.', error);
+      showToast('복사하지 못했어요. 다시 시도해보세요.');
+    }
+  };
+
+  const handleShareSelection = async () => {
+    if (!selectedText) {
+      return;
+    }
+
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: selectedReference,
+          text: selectedText,
+        });
+        showToast('공유 시트를 열었어요.');
+      } else {
+        await navigator.clipboard.writeText(selectedText);
+        showToast('공유를 지원하지 않아 복사로 대신했어요.');
+      }
+
+      handleClearSelection();
+    } catch (error) {
+      console.error('공유에 실패했습니다.', error);
+      showToast('공유하지 못했어요. 다시 시도해보세요.');
+    }
+  };
+
+  const handleHighlightColorSelect = (color: HighlightColor) => {
+    const selectedKeys = selectedVerseList.map((verse) =>
+      createVerseKey(verse.book, verse.chapter, verse.verse),
+    );
+
+    if (selectedKeys.length === 0) {
+      return;
+    }
+
+    const nextHighlights = { ...highlightedVerses };
+
+    selectedKeys.forEach((key) => {
+      const currentColor = nextHighlights[key];
+
+      if (currentColor === color) {
+        removeHighlight(key);
+        delete nextHighlights[key];
+      } else {
+        addHighlight(key, color);
+        nextHighlights[key] = color;
+      }
+    });
+
+    setHighlightedVerses(nextHighlights);
+    handleClearSelection();
+  };
+
+  const handleHighlightRemove = () => {
+    const selectedKeys = selectedVerseList.map((verse) =>
+      createVerseKey(verse.book, verse.chapter, verse.verse),
+    );
+
+    if (selectedKeys.length === 0) {
+      return;
+    }
+
+    const nextHighlights = { ...highlightedVerses };
+
+    selectedKeys.forEach((key) => {
+      removeHighlight(key);
+      delete nextHighlights[key];
+    });
+
+    setHighlightedVerses(nextHighlights);
+    handleClearSelection();
+  };
+
+  const toggleColorPicker = () => {
+    setIsColorPickerOpen((prev) => !prev);
+  };
+
+  return (
+    <div className="space-y-4 pb-[128px]">
+      {toast && <ToastMessage message={toast.message} />}
+
+      {hasSelection && (
+        <SelectionActionBar
+          selectedReference={selectedReference}
+          isColorPickerOpen={isColorPickerOpen}
+          onClearSelection={handleClearSelection}
+          onToggleColorPicker={toggleColorPicker}
+          onShare={handleShareSelection}
+          onCopy={handleCopySelection}
+          onHighlightRemove={handleHighlightRemove}
+          onHighlightColorSelect={handleHighlightColorSelect}
+        />
+      )}
+
       <div style={{ marginTop: '-5px' }}>
         {verses.map((verse, index) => {
           const verseKey = createVerseKey(verse.book, verse.chapter, verse.verse);
           const isSelected = selectedVerses.has(verseKey);
-          
-          // 이전 절이 선택되어 있는지 확인
+          const highlightColor = highlightedVerses[verseKey];
+
           const prevVerse = verses[index - 1];
-          const prevVerseKey = prevVerse ? createVerseKey(prevVerse.book, prevVerse.chapter, prevVerse.verse) : null;
+          const prevVerseKey = prevVerse
+            ? createVerseKey(prevVerse.book, prevVerse.chapter, prevVerse.verse)
+            : null;
           const isPrevSelected = prevVerseKey ? selectedVerses.has(prevVerseKey) : false;
-          
-          // 연속 선택 체크 - 둘 다 선택되어 있고 연속된 절 번호일 때만
-          const isConsecutiveWithPrev = isSelected && isPrevSelected && 
-                                       prevVerse && (verse.verse === prevVerse.verse + 1);
+          const isConsecutiveWithPrev =
+            isSelected && isPrevSelected && prevVerse && verse.verse === prevVerse.verse + 1;
 
           return (
             <div
               key={verseKey}
-              ref={(el) => { verseRefs.current[verse.verse] = el; }}
+              ref={(element) => {
+                verseRefs.current[verse.verse] = element;
+              }}
               onClick={() => handleVerseClick(verse)}
               className="cursor-pointer transition-colors hover:bg-gray-50"
-              style={{ 
-                // 모든 절에 동일한 고정 여백 적용 (패딩 포함해서 계산)
-                marginBottom: fontSize === 'large' ? '5px' : '2px', // 30px - 8px, 20px - 8px
+              style={{
+                marginBottom: fontSize === 'large' ? '5px' : '2px',
                 padding: '8px 0',
-                // 선택 시 배경색 적용
-                backgroundColor: isSelected ? '#DFD4C4' : 'transparent',
-                // 전체 너비로 확장 (상위 컨테이너 패딩 무시)
+                backgroundColor: isSelected
+                  ? '#E9E2D7'
+                  : highlightColor
+                    ? HIGHLIGHT_BACKGROUND_COLORS[highlightColor]
+                    : 'transparent',
                 marginLeft: '-30px',
                 marginRight: '-30px',
                 paddingLeft: '30px',
                 paddingRight: '30px',
-                // 연속 선택 시 상하 여백 조정으로 이어지게 만들기
-                marginTop: isConsecutiveWithPrev ? '0px' : '0px' // marginBottom과 일치하도록 조정
+                marginTop: isConsecutiveWithPrev ? '0px' : '0px',
+                borderRadius: '12px',
               }}
             >
-              <div className={`${FONT_SIZE_CLASSES[fontSize]}`} style={{ display: 'flex', alignItems: 'flex-start' }}>
-                <span 
+              <div
+                className={`${FONT_SIZE_CLASSES[fontSize]}`}
+                style={{ display: 'flex', alignItems: 'flex-start' }}
+              >
+                <span
                   style={{
                     fontFamily: 'Glory, sans-serif',
                     fontWeight: 'medium',
@@ -93,18 +264,18 @@ export default function VerseReader({ verses, fontSize, startVerse }: VerseReade
                     color: '#3C3C3C',
                     marginRight: '10px',
                     flexShrink: 0,
-                    marginTop: fontSize === 'large' ? '3px' : '2px'
+                    marginTop: fontSize === 'large' ? '3px' : '2px',
                   }}
                 >
                   {verse.verse}
                 </span>
-                <span 
+                <span
                   style={{
                     fontFamily: 'Pretendard, -apple-system, BlinkMacSystemFont, sans-serif',
                     fontWeight: 'medium',
                     fontSize: fontSize === 'large' ? '30px' : '18px',
                     color: '#2A2A2A',
-                    lineHeight: '1.5'
+                    lineHeight: '1.5',
                   }}
                 >
                   {verse.text}
