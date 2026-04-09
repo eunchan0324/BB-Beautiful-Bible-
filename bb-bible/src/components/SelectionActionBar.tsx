@@ -66,7 +66,10 @@ export default function SelectionActionBar({
     effectiveTheme === 'dark' ? DARK_HIGHLIGHT_BACKGROUND_COLORS : HIGHLIGHT_BACKGROUND_COLORS;
 
   return (
-    <div className="fixed left-0 right-0 z-40 px-5 safe-area-bottom" style={{ bottom: '16px' }}>
+    <div
+      className="fixed left-0 right-0 z-40 px-5 safe-area-bottom"
+      style={{ bottom: '16px' }}
+    >
       {isColorPickerOpen && (
         <div className="mx-auto mb-3 flex max-w-[768px] justify-end">
           <div

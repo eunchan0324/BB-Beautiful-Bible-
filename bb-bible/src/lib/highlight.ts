@@ -3,7 +3,7 @@ import { Highlight, HighlightColor, HighlightStorage } from '@/types/bible';
 const HIGHLIGHT_STORAGE_KEY = 'bb-bible-highlights';
 
 export const HIGHLIGHT_BACKGROUND_COLORS: Record<HighlightColor, string> = {
-  yellow: '#DFD4C4',
+  yellow: '#D7C8B2',
   blue: '#D8E4F7',
   green: '#DCEBDD',
   pink: '#F2D9DE',
