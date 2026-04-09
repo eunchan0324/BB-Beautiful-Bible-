@@ -9,6 +9,13 @@ export const HIGHLIGHT_BACKGROUND_COLORS: Record<HighlightColor, string> = {
   pink: '#F2D9DE',
 };
 
+export const DARK_HIGHLIGHT_BACKGROUND_COLORS: Record<HighlightColor, string> = {
+  yellow: '#5A4934',
+  blue: '#334963',
+  green: '#355443',
+  pink: '#5B4048',
+};
+
 export function loadHighlights(): HighlightStorage {
   if (typeof window === 'undefined') {
     return { highlights: {} };

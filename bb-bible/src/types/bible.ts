@@ -19,6 +19,8 @@ export interface BibleChapter {
 }
 
 export type HighlightColor = 'yellow' | 'blue' | 'green' | 'pink';
+export type ThemeMode = 'light' | 'dark' | 'system';
+export type ResolvedTheme = 'light' | 'dark';
 
 export interface Highlight {
   verseKey: string;

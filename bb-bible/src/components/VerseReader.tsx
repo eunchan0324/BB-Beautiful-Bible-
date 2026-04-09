@@ -7,16 +7,18 @@ import { FONT_SIZE_CLASSES } from '@/hooks/use-bible-store';
 import { createVerseKey } from '@/lib/bible-parser';
 import {
   addHighlight,
+  DARK_HIGHLIGHT_BACKGROUND_COLORS,
   HIGHLIGHT_BACKGROUND_COLORS,
   loadHighlights,
   removeHighlight,
 } from '@/lib/highlight';
 import { formatSelectedReference, formatSelectedText } from '@/lib/verse-selection';
-import { BibleVerse, FontSize, HighlightColor } from '@/types/bible';
+import { BibleVerse, FontSize, HighlightColor, ResolvedTheme } from '@/types/bible';
 
 interface VerseReaderProps {
   verses: BibleVerse[];
   fontSize: FontSize['size'];
+  effectiveTheme: ResolvedTheme;
   onFontSizeChange?: (size: FontSize['size']) => void;
   startVerse?: number;
 }
@@ -26,7 +28,32 @@ type ToastState = {
   message: string;
 } | null;
 
-export default function VerseReader({ verses, fontSize, startVerse }: VerseReaderProps) {
+const READER_THEME_COLORS: Record<
+  ResolvedTheme,
+  {
+    verseNumber: string;
+    verseText: string;
+    selectionUnderline: string;
+  }
+> = {
+  light: {
+    verseNumber: '#3C3C3C',
+    verseText: '#2A2A2A',
+    selectionUnderline: '#55524F',
+  },
+  dark: {
+    verseNumber: '#C8BDAE',
+    verseText: '#F3EFE8',
+    selectionUnderline: '#D8CCBD',
+  },
+};
+
+export default function VerseReader({
+  verses,
+  fontSize,
+  effectiveTheme,
+  startVerse,
+}: VerseReaderProps) {
   const [selectedVerses, setSelectedVerses] = useState<Set<string>>(new Set());
   const [highlightedVerses, setHighlightedVerses] = useState<Record<string, HighlightColor>>({});
   const [isColorPickerOpen, setIsColorPickerOpen] = useState(false);
@@ -40,6 +67,9 @@ export default function VerseReader({ verses, fontSize, startVerse }: VerseReade
   const selectedVerseNumbers = selectedVerseList.map((verse) => verse.verse).sort((a, b) => a - b);
   const selectedReference = formatSelectedReference(verses, selectedVerseNumbers);
   const selectedText = formatSelectedText(selectedVerseList);
+  const colors = READER_THEME_COLORS[effectiveTheme];
+  const highlightColors =
+    effectiveTheme === 'dark' ? DARK_HIGHLIGHT_BACKGROUND_COLORS : HIGHLIGHT_BACKGROUND_COLORS;
 
   useEffect(() => {
     if (startVerse && verseRefs.current[startVerse]) {
@@ -193,20 +223,17 @@ export default function VerseReader({ verses, fontSize, startVerse }: VerseReade
     handleClearSelection();
   };
 
-  const toggleColorPicker = () => {
-    setIsColorPickerOpen((prev) => !prev);
-  };
-
   return (
     <div className="space-y-4 pb-[128px]">
-      {toast && <ToastMessage message={toast.message} />}
+      {toast && <ToastMessage message={toast.message} effectiveTheme={effectiveTheme} />}
 
       {hasSelection && (
         <SelectionActionBar
           selectedReference={selectedReference}
+          effectiveTheme={effectiveTheme}
           isColorPickerOpen={isColorPickerOpen}
           onClearSelection={handleClearSelection}
-          onToggleColorPicker={toggleColorPicker}
+          onToggleColorPicker={() => setIsColorPickerOpen((prev) => !prev)}
           onShare={handleShareSelection}
           onCopy={handleCopySelection}
           onHighlightRemove={handleHighlightRemove}
@@ -235,21 +262,20 @@ export default function VerseReader({ verses, fontSize, startVerse }: VerseReade
                 verseRefs.current[verse.verse] = element;
               }}
               onClick={() => handleVerseClick(verse)}
-              className="cursor-pointer transition-colors hover:bg-gray-50"
+              className="cursor-pointer transition-colors"
               style={{
                 marginBottom: fontSize === 'large' ? '5px' : '2px',
                 padding: '8px 0',
-                backgroundColor: isSelected
-                  ? '#E9E2D7'
-                  : highlightColor
-                    ? HIGHLIGHT_BACKGROUND_COLORS[highlightColor]
-                    : 'transparent',
+                backgroundColor: highlightColor ? highlightColors[highlightColor] : 'transparent',
                 marginLeft: '-30px',
                 marginRight: '-30px',
                 paddingLeft: '30px',
                 paddingRight: '30px',
                 marginTop: isConsecutiveWithPrev ? '0px' : '0px',
-                borderRadius: '12px',
+                borderRadius: '0px',
+                boxShadow: 'none',
+                transform: 'none',
+                transition: 'background-color 160ms ease',
               }}
             >
               <div
@@ -261,7 +287,7 @@ export default function VerseReader({ verses, fontSize, startVerse }: VerseReade
                     fontFamily: 'Glory, sans-serif',
                     fontWeight: 'medium',
                     fontSize: fontSize === 'large' ? '16px' : '14px',
-                    color: '#3C3C3C',
+                    color: colors.verseNumber,
                     marginRight: '10px',
                     flexShrink: 0,
                     marginTop: fontSize === 'large' ? '3px' : '2px',
@@ -274,8 +300,12 @@ export default function VerseReader({ verses, fontSize, startVerse }: VerseReade
                     fontFamily: 'Pretendard, -apple-system, BlinkMacSystemFont, sans-serif',
                     fontWeight: 'medium',
                     fontSize: fontSize === 'large' ? '30px' : '18px',
-                    color: '#2A2A2A',
+                    color: colors.verseText,
                     lineHeight: '1.5',
+                    textDecoration: isSelected ? 'underline' : 'none',
+                    textDecorationColor: colors.selectionUnderline,
+                    textDecorationThickness: '3px',
+                    textUnderlineOffset: '6px',
                   }}
                 >
                   {verse.text}
