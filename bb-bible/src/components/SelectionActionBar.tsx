@@ -10,6 +10,7 @@ import {
 interface SelectionActionBarProps {
   selectedReference: string;
   effectiveTheme: ResolvedTheme;
+  bottomOffset: number;
   isColorPickerOpen: boolean;
   onClearSelection: () => void;
   onToggleColorPicker: () => void;
@@ -53,6 +54,7 @@ const HIGHLIGHT_COLOR_ORDER: HighlightColor[] = ['yellow', 'blue', 'green', 'pin
 export default function SelectionActionBar({
   selectedReference,
   effectiveTheme,
+  bottomOffset,
   isColorPickerOpen,
   onClearSelection,
   onToggleColorPicker,
@@ -67,8 +69,8 @@ export default function SelectionActionBar({
 
   return (
     <div
-      className="fixed left-0 right-0 z-40 px-5 safe-area-bottom"
-      style={{ bottom: '16px' }}
+      className="fixed left-0 right-0 z-50 px-5 safe-area-bottom transition-[bottom] duration-300 ease-in-out"
+      style={{ bottom: `${bottomOffset}px` }}
     >
       {isColorPickerOpen && (
         <div className="mx-auto mb-3 flex max-w-[768px] justify-end">

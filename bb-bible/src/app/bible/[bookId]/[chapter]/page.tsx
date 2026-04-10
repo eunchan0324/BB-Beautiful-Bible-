@@ -269,6 +269,7 @@ export default function ChapterReadPage() {
             verses={verses}
             fontSize={fontSize}
             effectiveTheme={effectiveTheme}
+            selectionActionBarBottomOffset={isHeaderVisible ? 16 : 116}
             onFontSizeChange={handleFontSizeChange}
             startVerse={startVerse}
           />
