@@ -19,6 +19,7 @@ interface VerseReaderProps {
   verses: BibleVerse[];
   fontSize: FontSize['size'];
   effectiveTheme: ResolvedTheme;
+  selectionActionBarBottomOffset?: number;
   onFontSizeChange?: (size: FontSize['size']) => void;
   startVerse?: number;
 }
@@ -52,6 +53,7 @@ export default function VerseReader({
   verses,
   fontSize,
   effectiveTheme,
+  selectionActionBarBottomOffset = 16,
   startVerse,
 }: VerseReaderProps) {
   const [selectedVerses, setSelectedVerses] = useState<Set<string>>(new Set());
@@ -231,6 +233,7 @@ export default function VerseReader({
         <SelectionActionBar
           selectedReference={selectedReference}
           effectiveTheme={effectiveTheme}
+          bottomOffset={selectionActionBarBottomOffset}
           isColorPickerOpen={isColorPickerOpen}
           onClearSelection={handleClearSelection}
           onToggleColorPicker={() => setIsColorPickerOpen((prev) => !prev)}
