@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C \"C:/Users/dmsck/OneDrive/바탕 화면/BB-Beautiful-Bible-/bb-bible\" status)",
+      "Bash(git -C \"C:/Users/dmsck/OneDrive/바탕 화면/BB-Beautiful-Bible-/bb-bible\" diff HEAD)"
+    ]
+  }
+}
